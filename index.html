@@ -296,6 +296,35 @@
 
 
     <script src="script.js"></script>
+        <!-- Firebase -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        getDocs
+      } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyBymyZMfHqY1zBCSw62Qx9X4z59rAEXUAw",
+        authDomain: "do-it-gym.firebaseapp.com",
+        projectId: "do-it-gym",
+        storageBucket: "do-it-gym.firebasestorage.app",
+        messagingSenderId: "261383526259",
+        appId: "1:261383526259:web:70a0c9f837167c03e9d706"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      const snapshot = await getDocs(collection(db, "workouts"));
+
+      snapshot.forEach((doc) => {
+        console.log(doc.id, doc.data());
+      });
+    </script>
+
+</body>
 
 </body>
               </html>
