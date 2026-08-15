@@ -1,1166 +1,403 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+// =====================================================
+// FIREBASE
+// =====================================================
 
-html {
-    scroll-behavior: smooth;
-}
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 
-body {
-    background: #080808;
-    color: #fff;
-    font-family: 'Inter', sans-serif;
-    overflow-x: hidden;
-}
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
-:root {
-    --lime: #b6ff00;
-    --black: #080808;
-    --card: #111;
-    --border: #272727;
-    --muted: #777;
-}
 
+const firebaseConfig = {
+    apiKey: "AIzaSyBymyZMfHqY1zBCSw62Qx9X4z59rAEXUAw",
+    authDomain: "do-it-gym.firebaseapp.com",
+    projectId: "do-it-gym",
+    storageBucket: "do-it-gym.firebasestorage.app",
+    messagingSenderId: "261383526259",
+    appId: "1:261383526259:web:70a0c9f837167c03e9d706"
+};
 
-/* ================= GENERAL ================= */
 
-a {
-    color: inherit;
-    text-decoration: none;
-}
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-button,
-input,
-select {
-    font-family: inherit;
-}
 
-button {
-    cursor: pointer;
-}
+// =====================================================
+// SELECT MEMBERSHIP PLAN
+// =====================================================
 
-::selection {
-    background: var(--lime);
-    color: #000;
-}
+function selectPlan(planName) {
 
+    const planSelect = document.getElementById("plan");
 
-/* ================= HEADER ================= */
+    const plans = {
+        "Starter": "Starter - ₹999/month",
+        "Beast Mode": "Beast Mode - ₹1,499/month",
+        "Elite": "Elite - ₹2,499/month"
+    };
 
-header {
-    height: 78px;
-    padding: 0 7%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-
-    background: rgba(8,8,8,.94);
-    backdrop-filter: blur(18px);
-
-    border-bottom: 1px solid #222;
-}
-
-.logo {
-    font-family: 'Anton', sans-serif;
-    font-size: 32px;
-    letter-spacing: 2px;
-}
-
-.logo span {
-    color: var(--lime);
-}
-
-nav {
-    display: flex;
-    gap: 30px;
-}
-
-nav a {
-    color: #999;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    transition: .25s;
-}
-
-nav a:hover {
-    color: var(--lime);
-}
-
-.top-btn,
-.main-btn {
-    background: var(--lime);
-    color: #000;
-    font-size: 11px;
-    font-weight: 900;
-    padding: 14px 22px;
-    display: inline-block;
-    transition: .3s;
-}
-
-.top-btn:hover,
-.main-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(182,255,0,.2);
-}
-
-
-/* ================= HERO ================= */
-
-.hero {
-    min-height: 720px;
-    padding: 90px 7%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    overflow: hidden;
-}
-
-.hero::before {
-    content: "";
-    position: absolute;
-    width: 550px;
-    height: 550px;
-    right: 5%;
-    top: 80px;
-    background: var(--lime);
-    filter: blur(200px);
-    opacity: .08;
-}
-
-.hero-bg-text {
-    position: absolute;
-    right: -30px;
-    bottom: -80px;
-    font-family: 'Anton';
-    font-size: 260px;
-    color: rgba(255,255,255,.018);
-    pointer-events: none;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 2;
-}
-
-.small-title,
-.section-label {
-    color: var(--lime);
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 3px;
-    margin-bottom: 18px;
-}
-
-h1 {
-    font-family: 'Anton', sans-serif;
-    font-size: clamp(75px, 10vw, 145px);
-    line-height: .86;
-    letter-spacing: -3px;
-}
-
-h1 span,
-.section-title span,
-.form-heading span,
-.bmi h2 span,
-.contact-heading span {
-    color: var(--lime);
-}
-
-.hero-text {
-    max-width: 510px;
-    color: #888;
-    line-height: 1.8;
-    margin: 30px 0;
-    font-size: 15px;
-}
-
-.hero-buttons {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-.outline-btn {
-    border: 1px solid #444;
-    padding: 13px 22px;
-    font-size: 11px;
-    font-weight: 800;
-    transition: .3s;
-}
-
-.outline-btn:hover {
-    border-color: var(--lime);
-    color: var(--lime);
-}
-
-.hero-location {
-    margin-top: 35px;
-    color: #666;
-    font-size: 10px;
-    letter-spacing: 2px;
-    font-weight: 800;
-}
-
-.hero-location span {
-    color: var(--lime);
-    margin-right: 8px;
-}
-
-.hero-visual {
-    width: 360px;
-    height: 400px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.hero-circle {
-    width: 300px;
-    height: 300px;
-    border: 1px solid #333;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: rotate 18s linear infinite;
-}
-
-.hero-circle strong {
-    font-family: 'Anton';
-    font-size: 90px;
-    color: var(--lime);
-    animation: counterRotate 18s linear infinite;
-}
-
-.circle-text {
-    position: absolute;
-    top: 17px;
-    font-size: 9px;
-    letter-spacing: 4px;
-    color: #555;
-}
-
-.hero-card {
-    position: absolute;
-    right: -10px;
-    bottom: 15px;
-    background: #111;
-    border: 1px solid #333;
-    padding: 20px 25px;
-    min-width: 190px;
-}
-
-.hero-card span,
-.hero-card small {
-    display: block;
-    color: var(--lime);
-    font-size: 9px;
-    font-weight: 900;
-    letter-spacing: 2px;
-}
-
-.hero-card strong {
-    display: block;
-    margin: 7px 0;
-    font-size: 17px;
-}
-
-.hero-card small {
-    color: #555;
-}
-
-@keyframes rotate {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes counterRotate {
-    to {
-        transform: rotate(-360deg);
-    }
-}
-
-
-/* ================= STATS ================= */
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(4,1fr);
-    border-top: 1px solid #222;
-    border-bottom: 1px solid #222;
-}
-
-.stats div {
-    padding: 35px;
-    text-align: center;
-    border-right: 1px solid #222;
-}
-
-.stats div:last-child {
-    border-right: none;
-}
-
-.stats h2 {
-    font-family: 'Anton';
-    font-size: 42px;
-}
-
-.stats h2 span {
-    color: var(--lime);
-}
-
-.stats p {
-    color: #555;
-    font-size: 9px;
-    letter-spacing: 2px;
-    margin-top: 7px;
-}
-
-
-/* ================= ABOUT ================= */
-
-.about {
-    padding: 120px 7%;
-    display: grid;
-    grid-template-columns: .8fr 1.2fr;
-    gap: 100px;
-}
-
-.section-title {
-    font-family: 'Anton';
-    font-size: clamp(50px,6vw,80px);
-    line-height: .9;
-}
-
-.section-intro > p:last-child {
-    color: #777;
-    line-height: 1.8;
-    max-width: 420px;
-    margin-top: 30px;
-}
-
-.features {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    border-top: 1px solid var(--border);
-}
-
-.feature {
-    padding: 35px;
-    border-bottom: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    position: relative;
-    transition: .3s;
-}
-
-.feature:nth-child(even) {
-    border-right: none;
-}
-
-.feature:hover {
-    background: #101010;
-}
-
-.feature-number {
-    color: #444;
-    font-size: 10px;
-    font-weight: 800;
-}
-
-.feature-icon {
-    font-size: 25px;
-    margin: 25px 0 15px;
-}
-
-.feature h3 {
-    font-size: 15px;
-    letter-spacing: 1px;
-}
-
-.feature p {
-    color: #666;
-    font-size: 13px;
-    line-height: 1.7;
-    margin-top: 12px;
-}
-
-
-/* ================= PLANS ================= */
-
-.plans {
-    padding: 110px 7%;
-    background: #0d0d0d;
-}
-
-.plans-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: end;
-    margin-bottom: 55px;
-}
-
-.plans-heading > p {
-    max-width: 350px;
-    color: #666;
-    line-height: 1.7;
-}
-
-.plan-container {
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    gap: 20px;
-}
-
-.plan {
-    background: #111;
-    border: 1px solid #292929;
-    padding: 38px;
-    position: relative;
-    transition: .35s;
-}
-
-.plan:hover {
-    transform: translateY(-8px);
-    border-color: var(--lime);
-}
-
-.plan.featured {
-    border-color: var(--lime);
-}
-
-.popular {
-    position: absolute;
-    right: 0;
-    top: 0;
-    background: var(--lime);
-    color: #000;
-    padding: 8px 13px;
-    font-size: 8px;
-    font-weight: 900;
-}
-
-.plan-number {
-    color: #444;
-    font-size: 10px;
-}
-
-.plan-name {
-    color: #888;
-    font-size: 12px;
-    letter-spacing: 2px;
-    font-weight: 900;
-    margin-top: 25px;
-}
-
-.price {
-    font-family: 'Anton';
-    font-size: 60px;
-    margin-top: 12px;
-}
-
-.price small {
-    font-family: 'Inter';
-    font-size: 10px;
-    color: #555;
-}
-
-.plan-description {
-    color: #666;
-    font-size: 12px;
-    line-height: 1.6;
-    min-height: 40px;
-}
-
-.plan ul {
-    list-style: none;
-    margin: 25px 0 30px;
-    line-height: 2.6;
-    color: #aaa;
-    font-size: 13px;
-}
-
-.plan li::first-letter {
-    color: var(--lime);
-}
-
-.plan button {
-    width: 100%;
-    padding: 16px;
-    background: transparent;
-    color: #fff;
-    border: 1px solid #444;
-    font-weight: 900;
-    font-size: 11px;
-    transition: .3s;
-}
-
-.plan button:hover {
-    background: var(--lime);
-    color: #000;
-    border-color: var(--lime);
-}
-
-
-/* ================= MOTIVATION ================= */
-
-.motivation {
-    min-height: 500px;
-    display: flex;
-    align-items: center;
-    padding: 80px 7%;
-    position: relative;
-    overflow: hidden;
-    background:
-        radial-gradient(circle at 80% 50%, rgba(182,255,0,.12), transparent 35%),
-        #090909;
-}
-
-.motivation::before {
-    content: "DO IT";
-    position: absolute;
-    right: -30px;
-    font-family: 'Anton';
-    font-size: 250px;
-    color: rgba(255,255,255,.025);
-}
-
-.motivation-content {
-    position: relative;
-    z-index: 2;
-}
-
-.motivation h2 {
-    font-family: 'Anton';
-    font-size: clamp(65px,9vw,120px);
-    line-height: .88;
-    margin-bottom: 35px;
-}
-
-.motivation h2 span {
-    color: var(--lime);
-}
-
-
-/* ================= JOIN ================= */
-
-.join {
-    background: #101010;
-    padding: 110px 7%;
-    display: grid;
-    grid-template-columns: .9fr 1.1fr;
-    gap: 90px;
-}
-
-.form-heading h2 {
-    font-family: 'Anton';
-    font-size: clamp(65px,7vw,100px);
-    line-height: .86;
-}
-
-.form-heading > p:last-of-type {
-    color: #777;
-    max-width: 430px;
-    line-height: 1.8;
-    margin-top: 30px;
-}
-
-.join-benefits {
-    margin-top: 35px;
-    display: grid;
-    gap: 13px;
-    color: #888;
-    font-size: 12px;
-}
-
-.join-benefits span {
-    color: var(--lime);
-    margin-right: 10px;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.form-top {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid #333;
-    padding-bottom: 15px;
-    color: var(--lime);
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: 2px;
-}
-
-.required-text {
-    color: #555;
-}
-
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.input-group label {
-    color: #666;
-    font-size: 9px;
-    font-weight: 900;
-    letter-spacing: 2px;
-}
-
-input,
-select {
-    width: 100%;
-    background: #181818;
-    border: 1px solid #303030;
-    color: #fff;
-    padding: 16px;
-    outline: none;
-    font-size: 13px;
-    border-radius: 0;
-}
-
-input:focus,
-select:focus {
-    border-color: var(--lime);
-}
-
-.row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-}
-
-.submit-btn {
-    padding: 18px;
-    background: var(--lime);
-    border: none;
-    color: #000;
-    font-weight: 900;
-    font-size: 12px;
-    transition: .3s;
-}
-
-.submit-btn:hover {
-    box-shadow: 0 10px 35px rgba(182,255,0,.2);
-}
-
-.submit-btn:disabled {
-    opacity: .5;
-    cursor: not-allowed;
-}
-
-.form-note {
-    text-align: center;
-    color: #555;
-    font-size: 9px;
-}
-
-
-/* ================= BMI ================= */
-
-.bmi {
-    padding: 110px 7%;
-    text-align: center;
-}
-
-.bmi h2 {
-    font-family: 'Anton';
-    font-size: 75px;
-}
-
-.bmi-description {
-    color: #666;
-    margin: 15px auto 35px;
-}
-
-.bmi-box {
-    max-width: 620px;
-    margin: auto;
-    padding: 35px;
-    background: #111;
-    border: 1px solid #292929;
-}
-
-.bmi-inputs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.bmi-box button {
-    width: 100%;
-    padding: 16px;
-    margin-top: 10px;
-    background: transparent;
-    color: #fff;
-    border: 1px solid #444;
-    font-weight: 900;
-    font-size: 11px;
-    transition: .3s;
-}
-
-.bmi-box button:hover {
-    background: var(--lime);
-    color: #000;
-}
-
-#bmiResult {
-    margin-top: 25px;
-    color: var(--lime);
-    font-weight: 900;
-    line-height: 1.8;
-}
-
-.bmi-note {
-    color: #444;
-    font-size: 9px;
-    margin-top: 20px;
-}
-
-
-/* ================= CONTACT ================= */
-
-.contact {
-    padding: 110px 7%;
-    background: #0d0d0d;
-}
-
-.contact-heading {
-    margin-bottom: 55px;
-}
-
-.contact-heading h2 {
-    font-family: 'Anton';
-    font-size: clamp(65px,8vw,105px);
-    line-height: .88;
-}
-
-.contact-grid {
-    display: grid;
-    grid-template-columns: repeat(4,1fr);
-    border-top: 1px solid #292929;
-    border-bottom: 1px solid #292929;
-}
-
-.contact-card {
-    padding: 35px 25px;
-    border-right: 1px solid #292929;
-    display: flex;
-    flex-direction: column;
-    transition: .3s;
-}
-
-.contact-card:last-child {
-    border-right: none;
-}
-
-.contact-card:hover {
-    background: #151515;
-}
-
-.contact-icon {
-    font-size: 24px;
-    margin-bottom: 30px;
-}
-
-.contact-card small {
-    color: #555;
-    font-size: 9px;
-    letter-spacing: 2px;
-    font-weight: 900;
-}
-
-.contact-card strong {
-    margin: 9px 0 15px;
-    font-size: 14px;
-    word-break: break-word;
-}
-
-.contact-card > span:last-child {
-    color: var(--lime);
-    font-size: 10px;
-    font-weight: 800;
-}
-
-.location-box {
-    margin-top: 30px;
-    border: 1px solid #292929;
-    padding: 35px;
-    display: flex;
-    justify-content: space-between;
-    gap: 30px;
-}
-
-.location-label,
-.hours span {
-    color: #555;
-    font-size: 9px;
-    letter-spacing: 2px;
-    font-weight: 900;
-}
-
-.location-box h3 {
-    margin: 10px 0;
-    font-family: 'Anton';
-    font-size: 30px;
-}
-
-.location-box p {
-    color: #666;
-    font-size: 12px;
-    line-height: 1.7;
-    max-width: 550px;
-}
-
-.hours {
-    min-width: 230px;
-    border-left: 1px solid #333;
-    padding-left: 35px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.hours strong {
-    margin: 10px 0;
-    font-size: 16px;
-}
-
-.hours small {
-    color: var(--lime);
-    font-size: 9px;
-    letter-spacing: 2px;
-}
-
-
-/* ================= FOOTER ================= */
-
-footer {
-    padding: 55px 7%;
-    border-top: 1px solid #222;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    align-items: center;
-}
-
-.footer-brand p {
-    color: #555;
-    font-family: 'Anton';
-    font-size: 18px;
-    line-height: 1.1;
-    margin-top: 10px;
-}
-
-.footer-links {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-}
-
-.footer-links a {
-    color: #666;
-    font-size: 10px;
-    text-transform: uppercase;
-}
-
-.footer-links a:hover {
-    color: var(--lime);
-}
-
-.footer-copy {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 7px;
-}
-
-.footer-copy small {
-    color: #444;
-    font-size: 8px;
-    letter-spacing: 1px;
-}
-
-
-/* ================= POPUP ================= */
-
-.popup {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.88);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    padding: 20px;
-}
-
-.popup.show {
-    display: flex;
-}
-
-.popup-box {
-    width: 100%;
-    max-width: 430px;
-    background: #111;
-    border: 1px solid var(--lime);
-    padding: 50px 35px;
-    text-align: center;
-    animation: popup .3s ease;
-}
-
-.check {
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-    background: var(--lime);
-    color: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: auto auto 20px;
-    font-size: 30px;
-    font-weight: 900;
-}
-
-.popup-label {
-    color: var(--lime);
-    font-size: 9px;
-    letter-spacing: 2px;
-    font-weight: 900;
-}
-
-.popup h2 {
-    font-family: 'Anton';
-    font-size: 50px;
-    margin-top: 8px;
-}
-
-.popup p:not(.popup-label) {
-    color: #777;
-    line-height: 1.7;
-    margin: 15px 0 25px;
-}
-
-.popup button {
-    width: 100%;
-    padding: 16px;
-    border: none;
-    background: var(--lime);
-    color: #000;
-    font-weight: 900;
-}
-
-@keyframes popup {
-    from {
-        transform: scale(.8);
-        opacity: 0;
+    if (plans[planName]) {
+        planSelect.value = plans[planName];
     }
 
-    to {
-        transform: scale(1);
-        opacity: 1;
+    document.getElementById("join").scrollIntoView({
+        behavior: "smooth"
+    });
+
+    setTimeout(() => {
+        document.getElementById("name").focus();
+    }, 700);
+}
+
+window.selectPlan = selectPlan;
+
+
+// =====================================================
+// FORM
+// =====================================================
+
+const gymForm = document.getElementById("gymForm");
+
+gymForm.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+
+    // -----------------------------
+    // GET VALUES
+    // -----------------------------
+
+    const name =
+        document.getElementById("name").value.trim();
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const phone =
+        document.getElementById("phone").value.trim();
+
+    const age =
+        Number(document.getElementById("age").value);
+
+    const gender =
+        document.getElementById("gender").value;
+
+    const goal =
+        document.getElementById("goal").value;
+
+    const plan =
+        document.getElementById("plan").value;
+
+
+    // -----------------------------
+    // VALIDATION
+    // -----------------------------
+
+    if (name.length < 2) {
+
+        alert("Please enter your full name.");
+
+        return;
     }
+
+
+    const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+
+        alert("Please enter a valid email address.");
+
+        return;
+    }
+
+
+    if (!/^[0-9]{10}$/.test(phone)) {
+
+        alert(
+            "Please enter a valid 10 digit mobile number."
+        );
+
+        return;
+    }
+
+
+    if (age < 10 || age > 100) {
+
+        alert("Please enter a valid age between 10 and 100.");
+
+        return;
+    }
+
+
+    if (!gender || !goal || !plan) {
+
+        alert(
+            "Please complete all required fields."
+        );
+
+        return;
+    }
+
+
+    // -----------------------------
+    // BUTTON LOADING
+    // -----------------------------
+
+    const submitButton =
+        gymForm.querySelector(".submit-btn");
+
+    submitButton.disabled = true;
+
+    submitButton.innerText =
+        "SUBMITTING...";
+
+
+    try {
+
+        // -----------------------------
+        // SAVE TO FIRESTORE
+        // -----------------------------
+
+        await addDoc(
+            collection(db, "members"),
+            {
+
+                name: name,
+
+                email: email,
+
+                phone: phone,
+
+                age: age,
+
+                gender: gender,
+
+                goal: goal,
+
+                plan: plan,
+
+                location: "Indore, Madhya Pradesh",
+
+                createdAt: serverTimestamp()
+
+            }
+        );
+
+
+        // -----------------------------
+        // SUCCESS POPUP
+        // -----------------------------
+
+        document.getElementById("popupMessage").innerHTML =
+            "Welcome to DO IT, <strong>" +
+            escapeHTML(name) +
+            "</strong>.<br><br>" +
+            "Your registration has been received.";
+
+
+        document
+            .getElementById("popup")
+            .classList
+            .add("show");
+
+
+        // -----------------------------
+        // RESET FORM
+        // -----------------------------
+
+        gymForm.reset();
+
+
+    } catch (error) {
+
+        console.error(
+            "Firebase registration error:",
+            error
+        );
+
+
+        alert(
+            "We couldn't complete your registration right now.\n\n" +
+            "Please check your internet connection and try again."
+        );
+
+
+    } finally {
+
+        submitButton.disabled = false;
+
+        submitButton.innerText =
+            "JOIN DO IT →";
+    }
+
+});
+
+
+// =====================================================
+// HTML ESCAPE
+// =====================================================
+
+function escapeHTML(value) {
+
+    return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
-/* ================= MOBILE ================= */
+// =====================================================
+// CLOSE POPUP
+// =====================================================
 
-@media(max-width: 900px) {
+function closePopup() {
 
-    header {
-        padding: 0 5%;
-    }
-
-    nav {
-        display: none;
-    }
-
-    .top-btn {
-        padding: 11px 14px;
-    }
-
-    .hero {
-        min-height: 780px;
-        padding: 70px 5%;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        gap: 50px;
-    }
-
-    .hero-bg-text {
-        font-size: 140px;
-    }
-
-    h1 {
-        font-size: 76px;
-    }
-
-    .hero-visual {
-        width: 100%;
-        height: 210px;
-    }
-
-    .hero-circle {
-        width: 180px;
-        height: 180px;
-    }
-
-    .hero-circle strong {
-        font-size: 55px;
-    }
-
-    .hero-card {
-        right: 5px;
-        bottom: 0;
-    }
-
-    .stats {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .stats div {
-        padding: 25px 10px;
-    }
-
-    .about,
-    .join {
-        grid-template-columns: 1fr;
-        gap: 55px;
-        padding: 80px 5%;
-    }
-
-    .features {
-        grid-template-columns: 1fr;
-    }
-
-    .feature {
-        border-right: none;
-    }
-
-    .plans {
-        padding: 80px 5%;
-    }
-
-    .plans-heading {
-        display: block;
-    }
-
-    .plans-heading > p {
-        margin-top: 25px;
-    }
-
-    .plan-container {
-        grid-template-columns: 1fr;
-    }
-
-    .motivation {
-        padding: 80px 5%;
-    }
-
-    .contact {
-        padding: 80px 5%;
-    }
-
-    .contact-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .contact-card:nth-child(2) {
-        border-right: none;
-    }
-
-    .location-box {
-        flex-direction: column;
-    }
-
-    .hours {
-        border-left: none;
-        border-top: 1px solid #333;
-        padding: 25px 0 0;
-    }
-
-    footer {
-        grid-template-columns: 1fr;
-        gap: 30px;
-        text-align: center;
-    }
-
-    .footer-links {
-        flex-wrap: wrap;
-    }
-
-    .footer-copy {
-        align-items: center;
-    }
+    document
+        .getElementById("popup")
+        .classList
+        .remove("show");
 }
 
+window.closePopup = closePopup;
 
-@media(max-width: 500px) {
 
-    .logo {
-        font-size: 27px;
-    }
+// =====================================================
+// CLOSE POPUP WHEN CLICKING OUTSIDE
+// =====================================================
 
-    .top-btn {
-        font-size: 9px;
-    }
+document
+    .getElementById("popup")
+    .addEventListener("click", function(event) {
 
-    h1 {
-        font-size: 65px;
-    }
+        if (event.target === this) {
 
-    .hero-text {
-        font-size: 13px;
-    }
+            closePopup();
 
-    .hero-buttons {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .hero-buttons a {
-        text-align: center;
-    }
-
-    .section-title {
-        font-size: 50px;
-    }
-
-    .row,
-    .bmi-inputs,
-    .contact-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .contact-card {
-        border-right: none;
-        border-bottom: 1px solid #292929;
-    }
-
-    .contact-card:last-child {
-        border-bottom: none;
-    }
-
-    .location-box h3 {
-        font-size: 25px;
-    }
-
-    .form-top {
-        font-size: 8px;
-    }
         }
+
+    });
+
+
+// =====================================================
+// BMI CALCULATOR
+// =====================================================
+
+function calculateBMI() {
+
+    const height =
+        parseFloat(
+            document.getElementById("height").value
+        );
+
+    const weight =
+        parseFloat(
+            document.getElementById("weight").value
+        );
+
+    const result =
+        document.getElementById("bmiResult");
+
+
+    if (
+        !height ||
+        !weight ||
+        height < 50 ||
+        height > 250 ||
+        weight < 10 ||
+        weight > 300
+    ) {
+
+        result.innerHTML =
+            "Enter a valid height and weight.";
+
+        return;
+    }
+
+
+    const heightMeter =
+        height / 100;
+
+
+    const bmi =
+        weight /
+        (heightMeter * heightMeter);
+
+
+    let category;
+
+
+    if (bmi < 18.5) {
+
+        category = "UNDERWEIGHT";
+
+    } else if (bmi < 25) {
+
+        category = "HEALTHY RANGE";
+
+    } else if (bmi < 30) {
+
+        category = "OVERWEIGHT";
+
+    } else {
+
+        category = "OBESE RANGE";
+
+    }
+
+
+    result.innerHTML =
+        "YOUR BMI: " +
+        bmi.toFixed(1) +
+        "<br>" +
+        category;
+}
+
+
+window.calculateBMI = calculateBMI;
+
+
+// =====================================================
+// PHONE INPUT
+// =====================================================
+
+document
+    .getElementById("phone")
+    .addEventListener("input", function() {
+
+        this.value =
+            this.value.replace(/\D/g, "");
+
+    });
+
+
+// =====================================================
+// HEADER SCROLL EFFECT
+// =====================================================
+
+window.addEventListener("scroll", function() {
+
+    const header =
+        document.getElementById("header");
+
+    if (window.scrollY > 30) {
+
+        header.style.boxShadow =
+            "0 10px 30px rgba(0,0,0,.25)";
+
+    } else {
+
+        header.style.boxShadow =
+            "none";
+
+    }
+
+});
